@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+require("coffee-script")
+var package = require("../index.coffee");
+package(process.argv[2]).toFile(process.argv[3], function(err){
+  if(err) throw err;
+  console.log("written:"+process.argv[3]);
+});
