@@ -61,3 +61,21 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
   
     // package/index.js
     module.exports = {}
+    
+## installation ##
+
+For global usage install via `npm install packageme -g`, otherwise `npm install packageme` will do the work or include pacakgeme to you `package.json`
+
+## Based on ##
+
+  * nodejs
+  * nibjs
+  * coffeescript
+
+## License ##
+
+"packageme" is owned by Boris Filipov. All rights not explicitly granted in the MIT license are reserved.
+
+"Node.js" and "node" are trademarks owned by Joyent, Inc. 
+
+"npm" and "the npm registry" are owned by Isaac Z. Schlueter.
