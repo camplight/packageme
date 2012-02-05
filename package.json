@@ -1,9 +1,10 @@
 {
   "author": "Boris Filipov <obiwonn@gmail.com>",
   "name": "packageme",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
-    "url": ""
+    "type" : "git",
+    "url": "http://github.com/camplight/packageme.git"
   },
   "main": "./index.coffee",
   "bin": {

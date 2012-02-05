@@ -12,13 +12,13 @@ module.exports = (sourceFolder, extension, resultHandler) ->
   # add trailing slash if missing
   if sourceFolder[sourceFolder.length-1] != "/"
     sourceFolder += "/"
-  console.log "combining "+sourceFolder
+  # console.log "combining "+sourceFolder
   
   glob sourceFolder+"**/*."+extension, (err, files)->
     throw err if err
 
     total = files.length
-    console.log "total "+extension+" files "+total
+    # console.log "total "+extension+" files "+total
 
     result = ""
     if total == 0
