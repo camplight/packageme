@@ -1,6 +1,6 @@
 #!/usr/bin/env coffee
-express = require('express')
-package = require("packageme")
+express = require 'express'
+package = require 'packageme'
 
 app = module.exports = express.createServer()
 
