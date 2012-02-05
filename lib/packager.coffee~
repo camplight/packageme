@@ -48,6 +48,7 @@ module.exports = class Packager
         resultHandler @str
     @pipe buffer
           
+
   toFile: (destinationFile, resultHandler) ->
     destinationFile = path.normalize destinationFile
     @toString (result) ->
