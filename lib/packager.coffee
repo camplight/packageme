@@ -1,30 +1,30 @@
-path = require("path")
-combine = require("./combine.coffee")
+path = require "path"
+combine = require "./combine.coffee"
 spawn = require('child_process').spawn
-fs = require('fs')
+fs = require 'fs'
 
 module.exports = class Packager
   constructor: (@sourceFolder) ->
 
   pipe: (stream) ->
-    fs.readFile __dirname+"/browser-src/packageme.js", (err, packagemeLibrary) =>
+    fs.readFile __dirname + "/browser-src/packageme.js", (err, packagemeLibrary) =>
       throw err if err
 
       #console.log "got packagemeLibrary code"
-      stream.write packagemeLibrary+"\n"
+      stream.write packagemeLibrary + "\n"
 
       combine @sourceFolder, "js", (javascriptCombined) =>
         #console.log "got combined javascript"
-        stream.write javascriptCombined+"\n"
+        stream.write javascriptCombined + "\n"
 
         combine @sourceFolder, "coffee", (coffeeCombined) =>  
-          
           #console.log "got combined coffee script"  
+          coffeeGenerated = ""
+
           coffee  = spawn 'coffee', "--compile --stdio".split(" ")
-          coffee.stdin.write(coffeeCombined)
+          coffee.stdin.write coffeeCombined
           coffee.stdin.end()
 
-          coffeeGenerated = "";
           coffee.stdout.on 'data', (data) ->
             coffeeGenerated += data.toString()
 
@@ -35,7 +35,7 @@ module.exports = class Packager
             if code != 0
               console.log 'coffee process exited with code ' + code
             
-            stream.write coffeeGenerated+"\n"
+            stream.write coffeeGenerated + "\n"
             stream.end()
 
   toString: (resultHandler) ->
@@ -48,12 +48,11 @@ module.exports = class Packager
         resultHandler @str
     @pipe buffer
           
-
   toFile: (destinationFile, resultHandler) ->
     destinationFile = path.normalize destinationFile
     @toString (result) ->
-      console.log "writing to file "+destinationFile
-      fs.writeFile destinationFile, result, resultHandler
+      console.log "writing to file " + destinationFile
+      fs.writeFile(destinationFile, result, resultHandler)
 
   toURI: (rootURI) ->
     return (req, res, next) =>
