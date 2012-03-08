@@ -3,9 +3,12 @@ _ = require "underscore"
 fs = require "fs"
 path = require "path"
 
+replaceAll = (pattern, target, replacement, ignore) ->
+  target.replace(new RegExp(pattern.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),"g"),replacement.replace(/\$/g,"$$$$"))
+
 render = (templateData, data) ->
   for key of data
-    templateData = templateData.replace(new RegExp("\{"+key+"\}", "g"), data[key])
+    templateData = replaceAll("%"+key+"%", templateData, data[key])
   return templateData
 
 module.exports = (sourceFolder, extension, resultHandler) ->
@@ -31,7 +34,7 @@ module.exports = (sourceFolder, extension, resultHandler) ->
           code = code.split("\n").join("\n    ")
 
           # render code with the template
-          result += render codeblockTemplate, { path: path.dirname(filePath) + "/", name: path.basename(filePath, "." + extension), code: code }
+          result += render(codeblockTemplate, { path: path.dirname(filePath) + "/", name: path.basename(filePath, "." + extension), code: code })
           result += "\n"
 
           total -= 1
