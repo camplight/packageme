@@ -2,41 +2,58 @@ path = require "path"
 combine = require "./combine.coffee"
 spawn = require('child_process').spawn
 fs = require 'fs'
+replaceAll = require "./replaceAll.coffee"
 
 module.exports = class Packager
-  constructor: (@sourceFolder) ->
+  constructor: (@sourceFolder, @contextName = "window") ->
+
+  readPackage: (handle) ->
+    path.exists @sourceFolder+"/package.json", (exists) =>
+      if exists
+        handle require(@sourceFolder+"/package.json") 
+      else
+        path.exists @sourceFolder+"/jspackage.json", (exists) =>
+          if exists
+            handle require(@sourceFolder+"/jspackage.json")
+
+  writeMain: (mainPath, stream) ->
+    stream.write @contextName+".packageme.require('" +path.basename(path.normalize(@sourceFolder))+"/"+mainPath+"');\n"
 
   pipe: (stream) ->
-    fs.readFile __dirname + "/browser-src/packageme.js", (err, packagemeLibrary) =>
-      throw err if err
+    @readPackage (package) =>
 
-      #console.log "got packagemeLibrary code"
-      stream.write packagemeLibrary + "\n"
+      fs.readFile __dirname + "/browser-src/packageme.js", (err, packagemeLibrary) =>
+        throw err if err
+        packagemeLibrary = replaceAll("%context%", packagemeLibrary.toString(), @contextName)
 
-      combine @sourceFolder, "js", (javascriptCombined) =>
-        #console.log "got combined javascript"
-        stream.write javascriptCombined + "\n"
+        #console.log "got packagemeLibrary code"
+        stream.write packagemeLibrary + "\n"
 
-        combine @sourceFolder, "coffee", (coffeeCombined) =>  
-          #console.log "got combined coffee script"  
-          coffeeGenerated = ""
+        combine @sourceFolder, "js", @contextName, (javascriptCombined) =>
+          #console.log "got combined javascript"
+          stream.write javascriptCombined + "\n"
 
-          coffee  = spawn 'coffee', "--compile --stdio".split(" ")
-          coffee.stdin.write coffeeCombined
-          coffee.stdin.end()
+          combine @sourceFolder, "coffee", @contextName, (coffeeCombined) =>  
+            #console.log "got combined coffee script"  
+            coffeeGenerated = ""
 
-          coffee.stdout.on 'data', (data) ->
-            coffeeGenerated += data.toString()
+            coffee  = spawn 'coffee', "--compile --stdio".split(" ")
+            coffee.stdin.write coffeeCombined
+            coffee.stdin.end()
 
-          coffee.stderr.on 'data',  (data) ->
-            console.log 'coffee stderr: ' + data
+            coffee.stdout.on 'data', (data) ->
+              coffeeGenerated += data.toString()
 
-          coffee.on 'exit', (code) ->
-            if code != 0
-              console.log 'coffee process exited with code ' + code
-            
-            stream.write coffeeGenerated + "\n"
-            stream.end()
+            coffee.stderr.on 'data',  (data) ->
+              console.log 'coffee stderr: ' + data
+
+            coffee.on 'exit', (code) =>
+              if code != 0
+                console.log 'coffee process exited with code ' + code
+              
+              stream.write coffeeGenerated + "\n"
+              @writeMain(package.main, stream) if package and package.main
+              stream.end()
 
   toString: (resultHandler) ->
     # simulate stream
@@ -51,7 +68,6 @@ module.exports = class Packager
   toFile: (destinationFile, resultHandler) ->
     destinationFile = path.normalize destinationFile
     @toString (result) ->
-      console.log "writing to file " + destinationFile
       fs.writeFile(destinationFile, result, resultHandler)
 
   toURI: (rootURI) ->

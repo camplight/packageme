@@ -1,13 +1,13 @@
 #!/usr/bin/env coffee
 express = require('express')
-package = require("../../index.coffee")
+packageme = require("../../index")
 
 app = module.exports = express.createServer()
 
 app.configure () ->
   app.use express.bodyParser() 
   app.use express.methodOverride()
-  app.use package(__dirname+"/../sample-package-data").toURI("/sample-package-data.js")
+  app.use packageme(__dirname+"/../sample-package-data").toURI("/sample-package-data.js")
   app.use app.router
   app.use express.static __dirname
 

@@ -1,17 +1,17 @@
 {
   "author": "Boris Filipov <obiwonn@gmail.com>",
   "name": "packageme",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "type" : "git",
     "url": "http://github.com/camplight/packageme.git"
   },
-  "main": "./index.coffee",
+  "main": "./index.js",
   "bin": {
     "packageme": "./bin/packageme"
   },
   "engines": {
-    "node": ">= 0.6.0 < 0.7.0"
+    "node": ">= 0.6.0"
   },
   "dependencies": {
     "coffee-script": "1.2.x",

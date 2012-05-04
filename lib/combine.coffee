@@ -11,12 +11,17 @@ render = (templateData, data) ->
     templateData = replaceAll("%"+key+"%", templateData, data[key])
   return templateData
 
-module.exports = (sourceFolder, extension, resultHandler) ->
+module.exports = (sourceFolder, extension, contextName, resultHandler) ->
   # add trailing slash if missing
   if sourceFolder[sourceFolder.length-1] != "/"
     sourceFolder += "/"
   
+  cwd = process.cwd()
+  process.chdir path.dirname(sourceFolder)
+
   glob sourceFolder + "**/*." + extension, (err, files) ->
+    process.chdir(cwd)
+
     throw err if err
 
     total = files.length
@@ -28,13 +33,15 @@ module.exports = (sourceFolder, extension, resultHandler) ->
 
     fs.readFile __dirname + "/browser-src/codeblock." + extension, "utf-8", (err, codeblockTemplate) ->
       _.each files, (filePath) ->
-        fs.readFile filePath, "utf-8", (err, code) =>
+
+        fs.readFile path.dirname(sourceFolder)+"/"+filePath, "utf-8", (err, code) =>
+          throw err if err
 
           # indend the code accodingly to the codeblock
           code = code.split("\n").join("\n    ")
 
           # render code with the template
-          result += render(codeblockTemplate, { path: path.dirname(filePath) + "/", name: path.basename(filePath, "." + extension), code: code })
+          result += render(codeblockTemplate, { context: contextName, path: path.dirname(filePath) + "/", name: path.basename(filePath, "." + extension), code: code })
           result += "\n"
 
           total -= 1
