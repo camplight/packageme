@@ -15,6 +15,8 @@ module.exports = class Packager
         path.exists @sourceFolder+"/jspackage.json", (exists) =>
           if exists
             handle require(@sourceFolder+"/jspackage.json")
+          else
+            handle null
 
   writeMain: (mainPath, stream) ->
     stream.write @contextName+".packageme.require('" +path.basename(path.normalize(@sourceFolder))+"/"+mainPath+"');\n"
