@@ -11,11 +11,12 @@ render = (templateData, data) ->
     templateData = replaceAll("%"+key+"%", templateData, data[key])
   return templateData
 
-module.exports = (sourceFolder, extension, contextName, resultHandler) ->
+module.exports = (sourceFolder, order, extension, contextName, resultHandler) ->
   # add trailing slash if missing
   if sourceFolder[sourceFolder.length-1] != "/"
     sourceFolder += "/"
   
+  # save current dir and change it to sourceFolder due glob inner workins :?
   cwd = process.cwd()
   process.chdir path.dirname(sourceFolder)
 
@@ -32,6 +33,12 @@ module.exports = (sourceFolder, extension, contextName, resultHandler) ->
       resultHandler result
 
     fs.readFile __dirname + "/browser-src/codeblock." + extension, "utf-8", (err, codeblockTemplate) ->
+
+      if typeof order != "undefined"
+        files = _.sortBy files, (file) ->
+          _.indexOf order, file        
+        files = files.reverse()
+
       _.each files, (filePath) ->
 
         fs.readFile path.dirname(sourceFolder)+"/"+filePath, "utf-8", (err, code) =>
