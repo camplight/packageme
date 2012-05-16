@@ -15,6 +15,8 @@ module.exports = class Packager
     @options = options
     # use as default window context
     @options.contextName ?= "window"
+    # use as default javascript format
+    @options.format ?= "js"
 
   toString: (resultHandler) ->
     # simulate stream
@@ -92,6 +94,20 @@ module.exports = class Packager
           stream.write coffeeGenerated + "\n"
           done()
 
+  writeFoundStylesheetsAt: (stream, options, done) ->
+    if options.package
+      order = options.package.order
+    combine options.sourceFolder, order, "css", options.contextName, (stylesheetsCombined) =>
+      stream.write stylesheetsCombined + "\n"
+      done()
+
+  writeFoundHtmlTemplatesAt: (stream, options, done) ->
+    if options.package
+      order = options.package.order
+    combine options.sourceFolder, order, "html", options.contextName, (templatesCombined) =>
+      stream.write templatesCombined + "\n"
+      done()
+
   writeMainAt: (stream, options) ->
     if options.package and options.package.main
       mainEntryPoint = path.basename(path.normalize(options.sourceFolder))+"/"+options.package.main
@@ -101,27 +117,43 @@ module.exports = class Packager
     @readPackage options, (p) =>
       # inject current source folder's package into options
       options.package = p
-      @writeFoundJavascriptAt stream, options, () =>
-        @writeFoundCoffeeAt stream, options, () =>
-          @writeMainAt stream, options
+      if options.format == "js" or options.format == "coffee"
+        @writeFoundJavascriptAt stream, options, () =>
+          @writeFoundCoffeeAt stream, options, () =>
+            @writeMainAt stream, options
+            done()
+      if options.format == "css"
+        @writeFoundStylesheetsAt stream, options, () =>
+          done()
+      if options.format == "html"
+        @writeFoundHtmlTemplatesAt stream, options, () =>
           done()
 
+  writeSourceAt: (stream, options, done) ->
+    if Array.isArray(@options.sourceFolder)
+
+      # reference when writing is finished
+      count = @options.sourceFolder.length
+
+      # iterates in each sourceFolder and writes to stream in async way
+      _.each @options.sourceFolder, (folder) =>
+        options = _.extend {}, @options
+        options.sourceFolder = folder
+        @writeSourceFolderAt stream, options, () =>
+          count -= 1
+          if count == 0
+            done()
+
+    else
+      @writeSourceFolderAt stream, @options, () =>
+        done()
+
   pipe: (stream) ->
-    @writePackageMeLibAt stream, @options, () =>
-      if Array.isArray(@options.sourceFolder)
+    if @options.format == "css" or @options.format == "html"
+      @writeSourceAt stream, @options, () =>
+        stream.end()
 
-        # reference when writing is finished
-        count = @options.sourceFolder.length
-
-        # iterates in each sourceFolder and writes to stream in async way
-        _.each @options.sourceFolder, (folder) =>
-          options = _.extend {}, @options
-          options.sourceFolder = folder
-          @writeSourceFolderAt stream, options, () =>
-            count -= 1
-            if count == 0
-              stream.end()
-
-      else
-        @writeSourceFolderAt stream, @options, () =>
+    if @options.format == "js" or @options.format == "coffee"
+      @writePackageMeLibAt stream, @options, () =>
+        @writeSourceAt stream, @options, () =>
           stream.end()
