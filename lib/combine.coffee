@@ -44,8 +44,11 @@ module.exports = (sourceFolder, order, extension, contextName, resultHandler) ->
         fs.readFile path.dirname(sourceFolder)+"/"+filePath, "utf-8", (err, code) =>
           throw err if err
 
-          # indend the code accodingly to the codeblock
-          code = code.split("\n").join("\n    ")
+          # indend the code accodingly to the codeblock, its not perfect but works
+          if extension == "js" or extension == "coffee"
+            code = code.split("\n").join("\n    ")
+          if extension == "html" 
+            code = code.split("\n").join("\n  ")
 
           # render code with the template
           result += render(codeblockTemplate, { context: contextName, path: path.dirname(filePath) + "/", name: path.basename(filePath, "." + extension), code: code })
