@@ -138,13 +138,14 @@ module.exports = class Packager
       # iterates in each sourceFolder and writes to stream in async way
       _.each @options.sourceFolder, (folder) =>
         options = _.extend {}, @options
-        options.sourceFolder = folder
+        options.sourceFolder = path.normalize(folder)
         @writeSourceFolderAt stream, options, () =>
           count -= 1
           if count == 0
             done()
 
     else
+      @options.sourceFolder = path.normalize(@options.sourceFolder)
       @writeSourceFolderAt stream, @options, () =>
         done()
 
