@@ -7,9 +7,9 @@
 for packaging of javascript, coffeescript & other^script code within a folder structure to
 
   * memory at runtime for development
-  * file for production
+  * file for production (TBD)
 
-Inspired by nibjs, following CommonJS, packages can be distributed via npm.
+Inspired by nibjs, respecting CommonJS.
 
 ## usage as command-line tool ##
 
@@ -22,18 +22,27 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     var package = require("packageme");
   
     // will write sourceFolder to destinationFile, invoking resultHandler on end
-    package(sourceFolder).toFile(destinationFile, resultHandler); 
+    package(sourceFolder).toFile(destinationFile, function(data){ }); 
   
     // will write sourceFolder to string, invoking resultHandler(string) on end
-    package(sourceFolder).toString(resultHandler);
+    package(sourceFolder).toString(function(data){ });
   
     // will pipe the sourceFolder to string, will invoke stream.end() once finished.
     package(sourceFolder).pipe(stream);
+    
+    // will combine both folders to string
+    package([sourceFolder1, sourceFolder2]).toString( ... )
+    
+    // will grab all the stylesheets from "path" and will return single string
+    package({ sourceFolder: "path", format: "css" }).toString( ... )
+    
+    // will grab all html files from sourceFolders 
+    // returns them 'escaped' with script tags for usage within browser like templates
+    package({ sourceFolder: ["path1", "path2"], format: "html" }).toString( ... )
 
 ## usage as express middleware ##
 
     // will return sourceFolder packaged at URI /packages/packageName based on sourceFolder/package.json
-    // toURI respects the NODE_ENV flag, and will optimize package process in production mode to happen only once.
     app.configure(function(){
       app.use(package(sourceFolder).toURI("/packages/packageName"));
       app.use(app.router);
@@ -62,6 +71,25 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     // package/index.js
     module.exports = {}
     
+## extra usage ##
+
+packageme tries to get metadata per given source folder by reading 'package.json' or 'jspackage.json' file in its root,
+which provides extra flexibility and control to the packaging process. 
+
+Here is example package.json having only the fields which packageme reads:
+
+    {
+      "order": [
+        "file1.js",
+        "file2.js"
+      ],
+      "main": "myApp"
+    } 
+    
+- `order` property forces packageme to place the files if found in the given order from beginning, and everything else after them.
+- `main` property can be used to indicate a entry point of the compiled package which need to be required once the script is loaded.
+
+    
 ## installation ##
 
 For global usage install via `npm install packageme -g`, otherwise `npm install packageme` will do the work or include pacakgeme to you `package.json`
@@ -74,7 +102,7 @@ For global usage install via `npm install packageme -g`, otherwise `npm install 
 
 ## License ##
 
-"packageme" is owned by Boris Filipov. All rights not explicitly granted in the MIT license are reserved.
+"packageme" is created by Boris Filipov. All rights not explicitly granted in the MIT license are reserved.
 
 "Node.js" and "node" are trademarks owned by Joyent, Inc. 
 
