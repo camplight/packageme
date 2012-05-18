@@ -1,7 +1,7 @@
 {
   "author": "Boris Filipov <obiwonn@gmail.com>",
   "name": "packageme",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "repository": {
     "type" : "git",
     "url": "http://github.com/camplight/packageme.git"
