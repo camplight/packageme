@@ -7,7 +7,7 @@ app = module.exports = express.createServer()
 app.configure () ->
   app.use express.bodyParser() 
   app.use express.methodOverride()
-  app.use package(__dirname).toURI("/code.js")
+  app.use package(__dirname).toExpressMiddleware("/code.js")
   app.use app.router
   app.use express.static __dirname
 

@@ -1,4 +1,4 @@
-do f = ->
+do ->
   require = (path, useCache) ->
     %context%.packageme.require(path, useCache, require.path)
   requireFolder = (path) ->
