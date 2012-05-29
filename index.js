@@ -15,5 +15,16 @@ module.exports = function (options) {
     options.sourceFolder = undefined;
   }
 
+  // use as default window context
+  options.contextName = options.contextName || "window";
+      
+  // use as default javascript format
+  options.format = options.format || "js"
+
+  // use as default caching enabled in production
+  if(process.env.NODE_ENV == "production") {
+    options.useCache = true;
+  }
+
   return new Package(options);
 }

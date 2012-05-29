@@ -19,6 +19,7 @@ module.exports = (options, files, done) ->
 
   fs.readFile __dirname + "/browser-src/codeblock."+options.format, "utf-8", (err, codeblockTemplate) ->
     _.each files, (file) ->
+      
       fs.readFile file.fullPath, "utf-8", (err, code) =>
         throw err if err
 
@@ -32,6 +33,8 @@ module.exports = (options, files, done) ->
           path: file.relativePath
           name: file.name
           code: code
+
+        data = _.extend(data, options.data) if options.data
 
         result += render(codeblockTemplate, data)
         result += "\n"

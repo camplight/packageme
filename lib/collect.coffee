@@ -12,6 +12,23 @@ module.exports = (options, done) ->
   total = options.source.length
 
   _.each options.source, (folder) ->
+    
+    # check folder for extension 
+    # and if it has such matching to target files
+    # just append to collected files and continue 
+    ext = path.extname(folder)
+    if ext == "."+options.format
+      f = new File()
+      f.name = path.basename(folder, "."+options.format)
+      f.relativePath = ""
+      f.fullPath = folder
+      f.extension = options.format
+      result.push(f)
+      total -= 1
+      if total == 0
+        done(result)
+      return
+
     if(folder.lastIndexOf("/") != folder.length-1)
       folder += "/"
     
@@ -27,7 +44,13 @@ module.exports = (options, done) ->
         files = _.sortBy files, (file) -> _.indexOf options.order, file
         files = files.reverse()
 
-      _.each files, (file) -> result.push(new File(folder, file))
+      _.each files, (file) -> 
+        f = new File()
+        f.name = path.basename(file, "."+options.format)
+        f.relativePath = path.dirname(file)+"/"
+        f.fullPath = path.dirname(folder)+"/"+file
+        f.extension = options.format
+        result.push(f)
 
       total -= 1
       if total == 0

@@ -4,13 +4,6 @@ fs = require "fs"
 
 module.exports = class Package
   constructor: ( @options ) ->
-
-    # use as default window context
-    @options.contextName ?= "window"
-    
-    # use as default javascript format
-    @options.format ?= "js"
-
     @cache = require("./cache.coffee")
 
   toString: (resultHandler) ->
@@ -27,13 +20,23 @@ module.exports = class Package
     @toString (result) ->
       fs.writeFile(destinationFile, result, resultHandler)
 
+  toExpressURIHandler: () ->
+    return (req, res, next) =>
+      if @options.format == "js"
+        res.header "content-type", "text/javascript"
+      if @options.format == "css"
+        res.header "content-type", "text/css"
+      if @options.format == "html"
+        res.header "content-type", "text/html"
+      @pipe res
+
   toExpressMiddleware: (rootURI) ->
     return (req, res, next) =>
       if req.url == rootURI
         if @options.format == "js"
           res.header "content-type", "text/javascript"
         if @options.format == "css"
-          res.header "content-type", "text/stylesheet"
+          res.header "content-type", "text/css"
         if @options.format == "html"
           res.header "content-type", "text/html"
         @pipe res
@@ -47,28 +50,49 @@ module.exports = class Package
       key = @cache.getCacheKey(@options)
       if @cache.contains(key)
         stream.write(@cache.getCachedData(key))
+        stream.end()
         return
 
       buffer = 
-        write: (data) ->
+        write: (data) =>
           @cache.write(key, data)
           stream.write(data)
         end: ()->
           stream.end()
 
-    # get current format builder, note javascript/coffeescript uses the same builder
-    build = require("./build/"+@options.format)
+    if @options.format == "js" || @options.format == "coffee"
+      packagemeHelper = require("./packagemeHelper")
+      buildJavascript = require("./build/js")
+      buildCoffee = require("./build/coffee")
 
-    collect @options, (files) =>
-      # inject collected files into options
-      @options.files = files
+      writeEnd = () =>
+        if @options.package and @options.package.main 
+          packagemeHelper.renderMainRequire @options, buffer, () =>
+            buffer.end()
+        else
+          buffer.end()
 
-      if @options.format == "js"
-        @options.format = "coffee"
-        collect @options, (files) =>
-          @options.files = @options.files.concat(files)
-          # build given options by writing to buffer
-          build @options, buffer
-      else
-        # build given options by writing to buffer
-        build @options, buffer
+      # always render packageme helper code first
+      packagemeHelper.renderPackageMe @options, buffer, () =>
+        # collect any javascript script files
+        @options.format = "js"
+        collect @options, (javascriptFiles) =>
+          # collect any coffee script files
+          @options.format = "coffee"
+          collect @options, (coffeeFiles) =>
+            # build javascript 
+            @options.files = javascriptFiles
+            buildJavascript @options, buffer, () =>
+              # build coffeescript
+              @options.files = coffeeFiles
+              if coffeeFiles.length == 0
+                writeEnd()
+              else
+                buildCoffee @options, buffer, () =>
+                  writeEnd()
+    else
+      build = require("./build/"+@options.format)
+      collect @options, (files) =>
+        @options.files = files
+        build @options, buffer, () =>
+          buffer.end()
