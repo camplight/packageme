@@ -1,29 +1,32 @@
 require("coffee-script");
 var Package = require("./lib/Package.coffee");
 
-module.exports = function (options) {
-  if(typeof options == "string")
-    options = { source: [options] };
+module.exports = function (inputOptions) {
+  var options = inputOptions || {
 
-  if(Array.isArray(options))
-    options = { source: options };
-
-  if(typeof options.sourceFolder != "undefined") {
-    options.source = options.sourceFolder; // backward compatability :?
-    if(typeof options.source == "string")
-      options.source = [options.source]
-    options.sourceFolder = undefined;
   }
 
+  if(Array.isArray(inputOptions))
+    options.source = inputOptions;
+
+  if(typeof inputOptions == "string")
+    options.source = [inputOptions];
+
+  if(typeof inputOptions.sourceFolder != "undefined") // backward compatability :?
+    options.source = inputOptions.sourceFolder; 
+
+  if(typeof inputOptions.source == "string")
+    options.source = [inputOptions.source]
+
   // use as default window context
-  options.contextName = options.contextName || "window";
+  options.contextName = inputOptions.contextName || "window";
       
   // use as default javascript format
-  options.format = options.format || "js"
+  options.format = inputOptions.format || "js"
 
   // use as default caching enabled in production
   if(process.env.NODE_ENV == "production") {
-    options.useCache = true;
+    options.useCache = inputOptions.useCase || true;
   }
 
   return new Package(options);
