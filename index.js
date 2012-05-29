@@ -6,11 +6,13 @@ module.exports = function (inputOptions) {
 
   }
 
+  if(typeof inputOptions == "string") {
+    options = {};
+    options.source = [inputOptions];
+  }
+
   if(Array.isArray(inputOptions))
     options.source = inputOptions;
-
-  if(typeof inputOptions == "string")
-    options.source = [inputOptions];
 
   if(typeof inputOptions.sourceFolder != "undefined") // backward compatability :?
     options.source = inputOptions.sourceFolder; 
