@@ -61,6 +61,11 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     var module = require("./innerModule");
     var module2 = require("../outerModule");
     var module3 = require("packageName");
+    
+    // will require all found modules in given folder and return them as object using inner directories as namespaces
+    var models = requireFolder("../models");
+    // new models.User() refers to models/User.js
+    // new models.inner.Session refers to models/inner/Session.js
   
     // innerModule.js
     exports.myFunction = function() {}
@@ -68,8 +73,15 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     // outerModule.js
     module.exports = function() {}
   
-    // package/index.js
+    // packageName/index.js
     module.exports = {}
+    
+    // models/User.js
+    module.exports = function() {}
+    module.exports.prototype = {}
+    
+    // models/inner/Session.js
+    module.exports = function() {}
     
 ## extra usage ##
 
@@ -89,6 +101,10 @@ Here is example package.json having only the fields which packageme reads:
 - `order` property forces packageme to place the files if found in the given order from beginning, and everything else after them.
 - `main` property can be used to indicate a entry point of the compiled package which need to be required once the script is loaded.
 
+## browser reference ##
+
+- `packageme.require( modulePath, useCache, startPoint )` 
+- `packageme.requireFolder( modulePath, startPoint )`
     
 ## installation ##
 
