@@ -61,6 +61,13 @@ module.exports = class Package
           stream.end()
 
     if @options.format == "js" || @options.format == "coffee"
+      
+      if @options.render == "snockets"
+        buildSnockets = require("./build/snockets")
+        buildSnockets @options, buffer, () =>
+          buffer.end()
+      return
+
       packagemeHelper = require("./packagemeHelper")
       buildJavascript = require("./build/js")
       buildCoffee = require("./build/coffee")
