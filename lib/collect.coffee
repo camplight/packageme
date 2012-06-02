@@ -15,7 +15,7 @@ module.exports = (options, done) ->
     
     # check folder for extension 
     # and if it has such matching to target files
-    # just append to collected files and continue 
+    # just append to collected files and return 
     ext = path.extname(folder)
     if ext == "."+options.format
       f = new File()
@@ -23,6 +23,7 @@ module.exports = (options, done) ->
       f.relativePath = ""
       f.fullPath = folder
       f.extension = options.format
+
       result.push(f)
       total -= 1
       if total == 0
@@ -34,10 +35,14 @@ module.exports = (options, done) ->
     
     folder = path.normalize(folder)
 
+    # weird but true
     cwd = process.cwd()
     process.chdir(path.dirname(folder))
+
     glob folder + "**/*." + options.format, (err, files) ->
       throw err if err
+
+      # still 
       process.chdir(cwd)
 
       if typeof options.order != "undefined"
@@ -50,6 +55,7 @@ module.exports = (options, done) ->
         f.relativePath = path.dirname(file)+"/"
         f.fullPath = path.dirname(folder)+"/"+file
         f.extension = options.format
+
         result.push(f)
 
       total -= 1

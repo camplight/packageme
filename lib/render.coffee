@@ -17,7 +17,12 @@ module.exports = (options, files, done) ->
     done(result)
     return
 
-  fs.readFile __dirname + "/browser-src/codeblock."+options.format, "utf-8", (err, codeblockTemplate) ->
+  if options.codeBlockTemplate
+    filePath = options.codeBlockTemplate+options.format
+  else
+    filePath = __dirname + "/browser-src/codeblock."+options.format
+    
+  fs.readFile filePath, "utf-8", (err, codeblockTemplate) ->
     _.each files, (file) ->
       
       fs.readFile file.fullPath, "utf-8", (err, code) =>
@@ -27,15 +32,17 @@ module.exports = (options, files, done) ->
         if options.indentLines
           code = code.split("\n").join("\n"+options.indentLines)
 
-        # render code with the template
+        # construct render data
         data = 
           context: options.contextName
           path: file.relativePath
           name: file.name
           code: code
 
+        # include any custom data on top
         data = _.extend(data, options.data) if options.data
 
+        # render code with the template
         result += render(codeblockTemplate, data)
         result += "\n"
 

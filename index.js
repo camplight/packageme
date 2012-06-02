@@ -30,6 +30,6 @@ module.exports = function (inputOptions) {
   if(process.env.NODE_ENV == "production") {
     options.useCache = inputOptions.useCase || true;
   }
-
+  
   return new Package(options);
 }

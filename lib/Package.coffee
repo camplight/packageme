@@ -82,6 +82,7 @@ module.exports = class Package
           collect @options, (coffeeFiles) =>
             # build javascript 
             @options.files = javascriptFiles
+            
             buildJavascript @options, buffer, () =>
               # build coffeescript
               @options.files = coffeeFiles
