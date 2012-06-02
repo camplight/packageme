@@ -81,16 +81,19 @@ module.exports = class Package
 
       # always render packageme helper code first
       packagemeHelper.renderPackageMe @options, buffer, () =>
+        
         # collect any javascript script files
         @options.format = "js"
         collect @options, (javascriptFiles) =>
+          
           # collect any coffee script files
           @options.format = "coffee"
           collect @options, (coffeeFiles) =>
+            
             # build javascript 
             @options.files = javascriptFiles
-            
             buildJavascript @options, buffer, () =>
+              
               # build coffeescript
               @options.files = coffeeFiles
               if coffeeFiles.length == 0
