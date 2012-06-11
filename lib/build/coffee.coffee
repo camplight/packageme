@@ -1,6 +1,6 @@
 render = require "../render.coffee"
 _ = require "underscore"
-spawn = require('child_process').spawn
+CoffeeScript = require 'coffee-script'
 
 module.exports = (options, stream, done) ->
   # clone options with specific coffee script related params
@@ -15,18 +15,5 @@ module.exports = (options, stream, done) ->
       done()
 
 compileCoffee = (coffeeCombined, resultHandler) ->
-  coffeeGenerated = ""
-
-  coffee  = spawn 'coffee', "--compile --stdio".split(" ")
-  coffee.stdin.write coffeeCombined
-  coffee.stdin.end()
-
-  coffee.stdout.on 'data', (data) ->
-    coffeeGenerated += data.toString()
-
-  coffee.stderr.on 'data',  (data) ->
-    console.log 'coffee stderr: ' + data
-
-  coffee.on 'exit', (code) =>
-    throw new Error('coffee process exited with code ' + code) if code != 0
-    resultHandler(coffeeGenerated)
+  compiled = CoffeeScript.compile coffeeCombined
+  resultHandler(compiled)

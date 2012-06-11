@@ -39,9 +39,6 @@ module.exports = (options, files, done) ->
           name: file.name
           code: code
 
-        # include any custom data on top
-        data = _.extend(data, options.data) if options.data
-
         # render code with the template
         result += render(codeblockTemplate, data)
         result += "\n"
