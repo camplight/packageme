@@ -6,14 +6,12 @@
 
 for packaging of javascript, coffeescript & other^script code within a folder structure to
 
-  * memory at runtime for development
-  * file for production (TBD)
+  * memory
+  * file
 
 Inspired by nibjs, respecting CommonJS.
 
 ## usage as command-line tool ##
-
-follwing will take sourceFolder/package.json and combine all supported scripts to destinationFile
 
     packageme sourceFolder destinationFile
 
@@ -34,26 +32,29 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     package([sourceFolder1, sourceFolder2]).toString( ... )
     
     // will grab all the stylesheets from "path" and will return single string
-    package({ sourceFolder: "path", format: "css" }).toString( ... )
+    package({ source: "path", format: "css" }).toString( ... )
     
     // will grab all html files from sourceFolders 
     // returns them 'escaped' with script tags for usage within browser like templates
-    package({ sourceFolder: ["path1", "path2"], format: "html" }).toString( ... )
+    package({ source: ["path1", "path2"], format: "html" }).toString( ... )
 
 ## usage as express middleware ##
 
-    // will return sourceFolder packaged at URI /packages/packageName based on sourceFolder/package.json
+    // will return express middleware for packaging javascripts/coffeescripts at specified URI
     app.configure(function(){
-      app.use(package(sourceFolder).toURI("/packages/packageName"));
+      app.use(package(...).toExpressMiddleware(URI));
       app.use(app.router);
     });
 
+    // will return express route handler with given packageme options
+    app.get("url", package(...).toExpressURIHandler());
+
 ## in browser usage ##
 
-    // will return module instance of packageName's main module.
-    var library = packageme.require("packageName");
+    // will return module instance of "moduleName"
+    var library = packageme.require("moduleName");
   
-    // will return module instance of moduleA within package 'packageName'
+    // will return module instance of moduleA from path 'packageName/libs/'
     var module = packageme.require("packageName/libs/moduleA");
   
     // require statements act as they should even within modules
@@ -83,28 +84,29 @@ follwing will take sourceFolder/package.json and combine all supported scripts t
     // models/inner/Session.js
     module.exports = function() {}
     
-## extra usage ##
-
-packageme tries to get metadata per given source folder by reading 'package.json' or 'jspackage.json' file in its root,
-which provides extra flexibility and control to the packaging process. 
-
-Here is example package.json having only the fields which packageme reads:
-
-    {
-      "order": [
-        "file1.js",
-        "file2.js"
-      ],
-      "main": "myApp"
-    } 
-    
-- `order` property forces packageme to place the files if found in the given order from beginning, and everything else after them.
-- `main` property can be used to indicate a entry point of the compiled package which need to be required once the script is loaded.
-
-## browser reference ##
+## Reference ##
+### browser ###
 
 - `packageme.require( modulePath, useCache, startPoint )` 
+  - useCache - optional
+  - startPoint - optional
 - `packageme.requireFolder( modulePath, startPoint )`
+  - startPoint - optional
+
+### packageme ###
+- packageme( options or String or Array )
+  - options.format -> defaults to "js", can be "html", "coffee", "css", indicates the formatter/render to be used
+  - options.order -> defaults to empty array, sets priority/order of packaging files, where those included in will be packaged first.
+  - options.render -> defaults to undefined, can be "snockets", if set uses ["snockets"](https://github.com/TrevorBurnham/snockets) to combine, package and stream javascript/coffeescript code
+  - options.source -> can be single path String or Array of path Strings pointing to files and/or folders to be packaged.
+  - options.contextName -> defaults to `window` string, indicates to which context name packageme should register itself and its results.
+  - options.useCache -> defaults to undefined, can be true or false, indicates that packageme should combine, compile and package given `options.source` only once. Cache uses in-memory store. Enable this on production instances.
+- toString(function(data){})
+- toFile(destinationFile, function(){})
+- toExpressURIHandler
+- toExpressMiddleware(URI)
+- pipe(stream)
+
     
 ## installation ##
 
@@ -115,6 +117,7 @@ For global usage install via `npm install packageme -g`, otherwise `npm install 
   * nodejs
   * nibjs
   * coffeescript
+  * snockets
 
 ## License ##
 

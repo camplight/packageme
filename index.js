@@ -25,11 +25,6 @@ module.exports = function (inputOptions) {
       
   // use as default javascript format
   options.format = inputOptions.format || "js"
-
-  // use as default caching enabled in production
-  if(process.env.NODE_ENV == "production") {
-    options.useCache = inputOptions.useCase || true;
-  }
   
   return new Package(options);
 }
