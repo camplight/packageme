@@ -66,8 +66,8 @@ module.exports = class Package
         buildSnockets = require("./build/snockets")
         buildSnockets @options, buffer, () =>
           buffer.end()
-      return
-
+        return
+      
       packagemeHelper = require("./packagemeHelper")
       buildJavascript = require("./build/js")
       buildCoffee = require("./build/coffee")
@@ -78,10 +78,10 @@ module.exports = class Package
             buffer.end()
         else
           buffer.end()
-
+      
       # always render packageme helper code first
       packagemeHelper.renderPackageMe @options, buffer, () =>
-        
+          
         # collect any javascript script files
         @options.format = "js"
         collect @options, (javascriptFiles) =>
@@ -93,7 +93,7 @@ module.exports = class Package
             # build javascript 
             @options.files = javascriptFiles
             buildJavascript @options, buffer, () =>
-              
+                
               # build coffeescript
               @options.files = coffeeFiles
               if coffeeFiles.length == 0
