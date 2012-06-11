@@ -22,7 +22,7 @@ module.exports = class Package
 
   toExpressURIHandler: () ->
     return (req, res, next) =>
-      if @options.format == "js"
+      if @options.format == "js" or @options.format == "coffee"
         res.header "content-type", "text/javascript"
       if @options.format == "css"
         res.header "content-type", "text/css"
@@ -33,7 +33,7 @@ module.exports = class Package
   toExpressMiddleware: (rootURI) ->
     return (req, res, next) =>
       if req.url == rootURI
-        if @options.format == "js"
+        if @options.format == "js" or @options.format == "coffee"
           res.header "content-type", "text/javascript"
         if @options.format == "css"
           res.header "content-type", "text/css"
