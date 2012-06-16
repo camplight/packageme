@@ -10,8 +10,25 @@ module.exports = (options, done) ->
   result = []
 
   total = options.source.length
+  if total == 0
+    done(result)
+    return
+
+  sayDone = () ->
+    total -= 1
+    if total == 0
+      done(result)
 
   _.each options.source, (folder) ->
+    
+    # check folder to be File object
+    if typeof folder == "object"
+      if folder.extension == options.format
+        result.push(new File(folder))
+        sayDone()
+      else
+        sayDone()
+      return
     
     # check folder for extension 
     # and if it has such matching to target files
@@ -25,9 +42,7 @@ module.exports = (options, done) ->
       f.extension = options.format
 
       result.push(f)
-      total -= 1
-      if total == 0
-        done(result)
+      sayDone()
       return
 
     if(folder.lastIndexOf("/") != folder.length-1)
@@ -58,6 +73,4 @@ module.exports = (options, done) ->
 
         result.push(f)
 
-      total -= 1
-      if total == 0
-        done(result)
+      sayDone()

@@ -1,6 +1,10 @@
+_ = require("underscore")
+
 module.exports = class File
   extension: ""
   fullPath: ""
   relativePath: ""
   name: ""
-  constructor: ()->
+  constructor: (attributes)->
+    if attributes
+      _.extend(@, attributes)

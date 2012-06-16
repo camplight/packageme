@@ -15,5 +15,6 @@ module.exports = (options, stream, done) ->
       done()
 
 compileCoffee = (coffeeCombined, resultHandler) ->
+
   compiled = CoffeeScript.compile coffeeCombined
   resultHandler(compiled)

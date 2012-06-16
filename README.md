@@ -85,7 +85,7 @@ Inspired by nibjs, respecting CommonJS.
     module.exports = function() {}
     
 ## Reference ##
-### browser ###
+### client-side packageme ###
 
 - `packageme.require( modulePath, useCache, startPoint )` 
   - useCache - optional
@@ -93,19 +93,25 @@ Inspired by nibjs, respecting CommonJS.
 - `packageme.requireFolder( modulePath, startPoint )`
   - startPoint - optional
 
-### packageme ###
-- packageme( options or String or Array )
-  - options.format -> defaults to "js", can be "html", "coffee", "css", indicates the formatter/render to be used
-  - options.order -> defaults to empty array, sets priority/order of packaging files, where those included in will be packaged first.
-  - options.render -> defaults to undefined, can be "snockets", if set uses ["snockets"](https://github.com/TrevorBurnham/snockets) to combine, package and stream javascript/coffeescript code
-  - options.source -> can be single path String or Array of path Strings pointing to files and/or folders to be packaged.
-  - options.contextName -> defaults to `window` string, indicates to which context name packageme should register itself and its results.
-  - options.useCache -> defaults to undefined, can be true or false, indicates that packageme should combine, compile and package given `options.source` only once. Cache uses in-memory store. Enable this on production instances.
-- toString(function(data){})
-- toFile(destinationFile, function(){})
-- toExpressURIHandler
-- toExpressMiddleware(URI)
-- pipe(stream)
+### server-side packageme ###
+- `packageme( options or String or Array )`
+  - `options.format` -> defaults to `"js"`, can be "html", "coffee", "css", indicates the formatter/render to be used
+  - `options.order` -> defaults to `empty array`, sets priority/order of packaging files, where those included in will be packaged first.
+  - `options.render` -> defaults to `undefined`, can be "snockets", if set uses ["snockets"](https://github.com/TrevorBurnham/snockets) to combine, package and stream javascript/coffeescript code
+  - `options.source` -> can be single `path String` or `Array of path Strings` pointing to files and/or folders to be packaged.
+    Or can be an `File` object which need to have the following properties set:
+      - `fullPath` - from where to read
+      - `relativePath` - where to be placed within browser
+      - `name` - name of the module
+      - `extension`
+
+  - `options.contextName` -> defaults to `window` string, indicates to which context name packageme should register itself and its results.
+  - `options.useCache` -> defaults to `undefined`, can be `true` or `false`, indicates that packageme should combine, compile and package given `options.source` only once. Cache uses in-memory store. Enable this on production instances.
+- `toString(function(data){})`
+- `toFile(destinationFile, function(){})`
+- `toExpressURIHandler()`
+- `toExpressMiddleware(URI)`
+- `pipe(stream)`
 
     
 ## installation ##
