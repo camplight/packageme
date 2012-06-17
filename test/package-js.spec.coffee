@@ -21,6 +21,7 @@ describe 'packageme html', ->
   it "should be able to package coffeescript source file", (done) ->
     options =
       source: __dirname+"/testData/code.coffee"
+      format: "coffee"
 
     packageme(options).toString (data) ->
       expect(data).toContain "Hello World"
@@ -29,6 +30,7 @@ describe 'packageme html', ->
   it "should be able to package coffeescript source folder", (done) ->
     options =
       source: __dirname+"/testData/coffeescript/"
+      format: "coffee"
 
     packageme(options).toString (data) ->
       expect(data).toContain "Hello World"

@@ -19,12 +19,12 @@ module.exports = function (inputOptions) {
 
   if(typeof inputOptions.source == "string")
     options.source = [inputOptions.source]
-
-  // use as default window context
-  options.contextName = inputOptions.contextName || "window";
       
   // use as default javascript format
-  options.format = inputOptions.format || "js"
+  options.format = inputOptions.format || "js";
+
+  if(typeof inputOptions.render == "undefined")
+    options.render = (options.format == "js" || options.format == "coffee")?"packageme":"";
   
   return new Package(options);
 }

@@ -1,7 +1,7 @@
 {
   "author": "Boris Filipov <obiwonn@gmail.com>",
   "name": "packageme",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "repository": {
     "type" : "git",
     "url": "http://github.com/camplight/packageme.git"
@@ -28,6 +28,7 @@
     "express": "2.5.x",
     "jade": "latest",
     "jasmine-node": "latest",
-    "shelljs": "latest"
+    "shelljs": "latest",
+    "node-mocks-http": "latest"
   }
 }

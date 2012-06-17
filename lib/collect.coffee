@@ -3,13 +3,13 @@ _ = require("underscore")
 path = require "path"
 File = require "./File.coffee"
 
-module.exports = (options, done) ->
-  # iterate through all options.source locations/files
+module.exports = (sources, format, done) ->
+  # iterate through all sources locations/files
   # find all files which are target for collection
   # construct single array with File objects
   result = []
 
-  total = options.source.length
+  total = sources.length
   if total == 0
     done(result)
     return
@@ -19,11 +19,11 @@ module.exports = (options, done) ->
     if total == 0
       done(result)
 
-  _.each options.source, (folder) ->
+  _.each sources, (folder) ->
     
     # check folder to be File object
     if typeof folder == "object"
-      if folder.extension == options.format
+      if folder.extension == format
         result.push(new File(folder))
         sayDone()
       else
@@ -34,12 +34,12 @@ module.exports = (options, done) ->
     # and if it has such matching to target files
     # just append to collected files and return 
     ext = path.extname(folder)
-    if ext == "."+options.format
+    if ext == "."+format
       f = new File()
-      f.name = path.basename(folder, "."+options.format)
+      f.name = path.basename(folder, "."+format)
       f.relativePath = ""
       f.fullPath = folder
-      f.extension = options.format
+      f.extension = format
 
       result.push(f)
       sayDone()
@@ -52,24 +52,26 @@ module.exports = (options, done) ->
 
     # weird but true
     cwd = process.cwd()
-    process.chdir(path.dirname(folder))
+    
+    try
+      process.chdir(path.dirname(folder))
+    catch err
+      throw new Error("Cannot find "+folder+" folder \n"+err)
 
-    glob folder + "**/*." + options.format, (err, files) ->
+
+
+    glob folder + "**/*." + format, (err, files) ->
       throw err if err
 
       # still 
       process.chdir(cwd)
 
-      if typeof options.order != "undefined"
-        files = _.sortBy files, (file) -> _.indexOf options.order, file
-        files = files.reverse()
-
       _.each files, (file) -> 
         f = new File()
-        f.name = path.basename(file, "."+options.format)
+        f.name = path.basename(file, "."+format)
         f.relativePath = path.dirname(file)+"/"
         f.fullPath = path.dirname(folder)+"/"+file
-        f.extension = options.format
+        f.extension = format
 
         result.push(f)
 
