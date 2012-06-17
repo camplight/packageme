@@ -96,8 +96,7 @@ Inspired by nibjs, respecting CommonJS.
 ### server-side packageme ###
 - `packageme( options or String or Array )`
   - `options.format` -> defaults to `"js"`, can be "html", "coffee", "css", indicates the formatter/render to be used
-  - `options.order` -> defaults to `empty array`, sets priority/order of packaging files, where those included in will be packaged first.
-  - `options.render` -> defaults to `undefined`, can be "snockets", if set uses ["snockets"](https://github.com/TrevorBurnham/snockets) to combine, package and stream javascript/coffeescript code
+  - `options.render` -> defaults to `packageme`, can be "snockets", if set uses ["snockets"](https://github.com/TrevorBurnham/snockets) to combine, package and stream javascript/coffeescript code
   - `options.source` -> can be single `path String` or `Array of path Strings` pointing to files and/or folders to be packaged.
     Or can be an `File` object which need to have the following properties set:
       - `fullPath` - from where to read
@@ -105,12 +104,16 @@ Inspired by nibjs, respecting CommonJS.
       - `name` - name of the module
       - `extension`
 
-  - `options.contextName` -> defaults to `window` string, indicates to which context name packageme should register itself and its results.
+  - `options.context` -> defaults to `window` string, indicates to which context name packageme should register itself and its results.
   - `options.useCache` -> defaults to `undefined`, can be `true` or `false`, indicates that packageme should combine, compile and package given `options.source` only once. Cache uses in-memory store. Enable this on production instances.
+  - `options.compile` -> defaults to `undefined`, can be `true` or `false`, indicates that packageme should combine, compile and package given `options.source`. Useful when getting script/style tags and serving those files via express
 - `toString(function(data){})`
 - `toFile(destinationFile, function(){})`
 - `toExpressURIHandler()`
 - `toExpressMiddleware(URI)`
+- `toScriptTags()`
+- `toStyleTags()`
+- `serveFilesToExpress(app)`
 - `pipe(stream)`
 
     
