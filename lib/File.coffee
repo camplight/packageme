@@ -1,3 +1,4 @@
+path = require("path")
 _ = require("underscore")
 
 module.exports = class File
@@ -8,3 +9,4 @@ module.exports = class File
   constructor: (attributes)->
     if attributes
       _.extend(@, attributes)
+    @fullPath = path.normalize(@fullPath)

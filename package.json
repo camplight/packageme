@@ -28,6 +28,7 @@
     "express": "2.5.x",
     "jade": "latest",
     "jasmine-node": "latest",
-    "shelljs": "latest"
+    "shelljs": "latest",
+    "node-mocks-http": "latest"
   }
 }
