@@ -41,6 +41,8 @@ describe 'packageme html', ->
       method: 'GET',
       url: '/bla/test.js'
     response = httpMocks.createResponse()
+    response.header = () ->
+      
     response.send = (data) ->
       expect(data).toContain "Hello World"
       expect(data).toContain "packageme.register"
@@ -65,6 +67,8 @@ describe 'packageme html', ->
       method: 'GET',
       url: '/packageme.js'
     response = httpMocks.createResponse()
+    response.header = () ->
+
     response.end = () ->
       expect(response._getData()).toContain "packageme"
       expect(response._getData()).toContain "normalizePath"
