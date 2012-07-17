@@ -38,6 +38,10 @@ Inspired by nibjs, respecting CommonJS.
     // returns them 'escaped' with script tags for usage within browser like templates
     package({ source: ["path1", "path2"], format: "html" }).toString( ... )
 
+    // will grab all jade files from sourceFolders 
+    // returns them as html 'escaped' with script tags for usage within browser like templates
+    package({ source: ["path1", "path2"], format: "jade" }).toString( ... )
+
 ## usage as express middleware ##
 
     // will return express middleware for packaging javascripts/coffeescripts at specified URI
@@ -127,10 +131,11 @@ For global usage install via `npm install packageme -g`, otherwise `npm install 
   * nibjs
   * coffeescript
   * snockets
+  * jade
 
 ## License ##
 
-"packageme" is created by Boris Filipov. All rights not explicitly granted in the MIT license are reserved.
+"packageme" is created by Boris Filipov. All rights not explicitly granted in the MIT license are reserved. :)
 
 "Node.js" and "node" are trademarks owned by Joyent, Inc. 
 
