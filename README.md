@@ -132,6 +132,7 @@ For global usage install via `npm install packageme -g`, otherwise `npm install 
   * coffeescript
   * snockets
   * jade
+  * uglify-js
 
 ## License ##
 
