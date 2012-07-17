@@ -9,6 +9,9 @@ renderFiles = require "./renderFiles"
 renderPackageme = require "./renderPackageme"
 renderSnockets = require "./renderSnockets"
 
+jsp = require("uglify-js").parser
+pro = require("uglify-js").uglify
+
 sendHeader = (res, format) ->
   if format == "js" or format == "coffee"
     res.header "content-type", "text/javascript"
@@ -138,6 +141,22 @@ module.exports = class Package
     else
     if @options.render == "packageme"
       configure = require "./renderConfig/"+@options.format
+
+      if @options.compile
+        oldBuffer = buffer
+        buffer = 
+          cache: ""
+          write: (data) ->
+            @cache += data.toString()
+          end: () ->
+            orig_code = @cache
+            ast = jsp.parse(orig_code)
+            ast = pro.ast_mangle(ast)
+            ast = pro.ast_squeeze(ast)
+            final_code = pro.gen_code(ast)
+            oldBuffer.write(final_code)
+            oldBuffer.end()
+
       renderPackageme @options.source, configure(@options), buffer, () =>
         buffer.end()
     else
